@@ -1876,7 +1876,9 @@ fn dot() {
     // test alternate formatting
     #[derive(Debug)]
     struct Record {
+        #[allow(dead_code)]
         a: i32,
+        #[allow(dead_code)]
         b: &'static str,
     }
     let mut gr = Graph::new();
