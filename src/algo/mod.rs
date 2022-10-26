@@ -5,6 +5,7 @@
 //! the `Graph` type.
 
 pub mod astar;
+pub mod astar_chain;
 pub mod bellman_ford;
 pub mod dijkstra;
 pub mod dominators;
