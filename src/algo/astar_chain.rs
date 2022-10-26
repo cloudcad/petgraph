@@ -73,6 +73,8 @@ pub fn astar_chain<G, F, H, K, IsGoal>(
     mut is_goal: IsGoal,
     mut edge_cost: F,
     mut estimate_cost: H,
+    min_cost: Option<K>,
+    max_cost: Option<K>,
 ) -> Option<(K, Vec<(G::NodeId, G::NodeId, G::EdgeId)>)>
 where
     G: IntoEdges + Visitable,
@@ -92,9 +94,30 @@ where
     visit_next.push(MinScored(estimate_cost(start), start));
 
     while let Some(MinScored(estimate_score, node)) = visit_next.pop() {
+        let cost = scores[&node];
+
+        // if we have a max_cost, and we have exceeded it, we can stop
+        if let Some(max_links) = max_cost {
+            if cost > max_links {
+                return None;
+            }
+        }
+
         if is_goal(node) {
+            // if a min_cost is set, and we have not reached it, no need to spend time & memory building chain
+            if let Some(min_cost) = min_cost {
+                if cost < min_cost {
+                    return None;
+                }
+            }
+
             let chain = path_tracker.reconstruct_path_to(node);
-            let cost = scores[&node];
+
+            // no chain so return None
+            if chain.len() == 0 {
+                return None;
+            }
+
             return Some((cost, chain));
         }
 
@@ -171,13 +194,7 @@ where
         G: GraphBase,
         G: IntoEdges + Visitable,
     {
-        //        let mut path = vec![last];
         let mut links: Vec<(G::NodeId, G::NodeId, G::EdgeId)> = Vec::new();
-        // links.push(Link {
-        //     from: self.came_from.get(&last).unwrap().0,
-        //     to: last,
-        //     edge: self.came_from.get(&last).unwrap().1,
-        // });
 
         let mut current = last;
         while let Some(&previous) = self.came_from.get(&current) {
