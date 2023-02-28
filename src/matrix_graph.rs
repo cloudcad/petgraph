@@ -464,7 +464,7 @@ impl<N, E, Ty: EdgeType, Null: Nullable<Wrapped = E>, Ix: IndexType>
     /// - `Undirected`: All edges connected to `a`.
     ///
     /// Produces an empty iterator if the node doesn't exist.<br>
-    /// Iterator element type is [`Edges<E, Ix>`](../graph/struct.Edges.html).
+    /// Iterator element type is (NodeIndex<Ix>, NodeIndex<Ix>, &E).
     pub fn edges(&self, a: NodeIndex<Ix>) -> Edges<Ty, Null, Ix> {
         Edges::on_columns(a.index(), &self.node_adjacencies, self.node_capacity)
     }
@@ -556,7 +556,7 @@ impl<N, E, Null: Nullable<Wrapped = E>, Ix: IndexType> MatrixGraph<N, E, Directe
     /// - `Incoming`: All edges to `a`.
     ///
     /// Produces an empty iterator if the node `a` doesn't exist.<br>
-    /// Iterator element type is [`EdgeReference<E, Ix>`](../graph/struct.EdgeReference.html).
+    /// Iterator element type is (NodeIndex<Ix>, NodeIndex<Ix>, &E).
     pub fn edges_directed(&self, a: NodeIndex<Ix>, d: Direction) -> Edges<Directed, Null, Ix> {
         if d == Outgoing {
             self.edges(a)
@@ -1133,12 +1133,12 @@ impl<N, E, Ty: EdgeType, Null: Nullable<Wrapped = E>, Ix: IndexType> Visitable
     type Map = FixedBitSet;
 
     fn visit_map(&self) -> FixedBitSet {
-        FixedBitSet::with_capacity(self.node_count())
+        FixedBitSet::with_capacity(self.node_bound())
     }
 
     fn reset_map(&self, map: &mut Self::Map) {
         map.clear();
-        map.grow(self.node_count());
+        map.grow(self.node_bound());
     }
 }
 
@@ -1235,7 +1235,7 @@ impl<N, E, Ty: EdgeType, Null: Nullable<Wrapped = E>, Ix: IndexType> NodeIndexab
     for MatrixGraph<N, E, Ty, Null, Ix>
 {
     fn node_bound(&self) -> usize {
-        self.node_count()
+        self.nodes.upper_bound
     }
 
     fn to_index(&self, ix: NodeIndex<Ix>) -> usize {
@@ -1782,5 +1782,38 @@ mod tests {
 
         assert!(!g.has_edge(a, b));
         assert_eq!(g.edge_count(), 0);
+    }
+    #[test]
+    // From https://github.com/petgraph/petgraph/issues/523
+    fn test_tarjan_scc_with_removed_node() {
+        let mut g: MatrixGraph<(), ()> = MatrixGraph::new();
+
+        g.add_node(());
+        let b = g.add_node(());
+        g.add_node(());
+
+        g.remove_node(b);
+
+        assert_eq!(
+            crate::algo::tarjan_scc(&g),
+            [[node_index(0)], [node_index(2)]]
+        );
+    }
+
+    #[test]
+    // From https://github.com/petgraph/petgraph/issues/523
+    fn test_kosaraju_scc_with_removed_node() {
+        let mut g: MatrixGraph<(), ()> = MatrixGraph::new();
+
+        g.add_node(());
+        let b = g.add_node(());
+        g.add_node(());
+
+        g.remove_node(b);
+
+        assert_eq!(
+            crate::algo::kosaraju_scc(&g),
+            [[node_index(2)], [node_index(0)]]
+        );
     }
 }

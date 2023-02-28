@@ -197,6 +197,20 @@ where
         self.g.capacity()
     }
 
+    /// Reverse the direction of all edges
+    pub fn reverse(&mut self) {
+        // swap edge endpoints,
+        // edge incoming / outgoing lists,
+        // node incoming / outgoing lists
+        for edge in &mut self.g.edges {
+            edge.node.swap(0, 1);
+            edge.next.swap(0, 1);
+        }
+        for node in &mut self.g.nodes {
+            node.next.swap(0, 1);
+        }
+    }
+
     /// Remove all nodes and edges
     pub fn clear(&mut self) {
         self.node_count = 0;
@@ -557,6 +571,24 @@ where
     pub fn edge_indices(&self) -> EdgeIndices<E, Ix> {
         EdgeIndices {
             iter: enumerate(self.raw_edges()),
+        }
+    }
+
+    /// Return an iterator over all the edges connecting `a` and `b`.
+    ///
+    /// - `Directed`: Outgoing edges from `a`.
+    /// - `Undirected`: All edges connected to `a`.
+    ///
+    /// Iterator element type is `EdgeReference<E, Ix>`.
+    pub fn edges_connecting(
+        &self,
+        a: NodeIndex<Ix>,
+        b: NodeIndex<Ix>,
+    ) -> EdgesConnecting<E, Ty, Ix> {
+        EdgesConnecting {
+            target_node: b,
+            edges: self.edges_directed(a, Direction::Outgoing),
+            ty: PhantomData,
         }
     }
 
@@ -1425,6 +1457,37 @@ where
     }
 }
 
+/// Iterator over the multiple directed edges connecting a source node to a target node
+#[derive(Debug, Clone)]
+pub struct EdgesConnecting<'a, E: 'a, Ty, Ix: 'a = DefaultIx>
+where
+    Ty: EdgeType,
+    Ix: IndexType,
+{
+    target_node: NodeIndex<Ix>,
+    edges: Edges<'a, E, Ty, Ix>,
+    ty: PhantomData<Ty>,
+}
+
+impl<'a, E, Ty, Ix> Iterator for EdgesConnecting<'a, E, Ty, Ix>
+where
+    Ty: EdgeType,
+    Ix: IndexType,
+{
+    type Item = EdgeReference<'a, E, Ix>;
+
+    fn next(&mut self) -> Option<EdgeReference<'a, E, Ix>> {
+        let target_node = self.target_node;
+        self.edges
+            .by_ref()
+            .find(|&edge| edge.node[1] == target_node)
+    }
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        let (_, upper) = self.edges.size_hint();
+        (0, upper)
+    }
+}
+
 fn swap_pair<T>(mut x: [T; 2]) -> [T; 2] {
     x.swap(0, 1);
     x
@@ -2021,4 +2084,20 @@ fn extend_with_edges() {
     assert_eq!(gr.node_count(), 4);
     assert_eq!(gr.edge_count(), 2);
     gr.check_free_lists();
+}
+
+#[test]
+fn test_reverse() {
+    let mut gr = StableGraph::<_, _>::default();
+    let a = gr.add_node("a");
+    let b = gr.add_node("b");
+
+    gr.add_edge(a, b, 0);
+
+    let mut reversed_gr = gr.clone();
+    reversed_gr.reverse();
+
+    for i in gr.node_indices() {
+        itertools::assert_equal(gr.edges_directed(i, Incoming), reversed_gr.edges(i));
+    }
 }
