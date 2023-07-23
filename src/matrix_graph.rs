@@ -480,7 +480,7 @@ impl<N, E, Ty: EdgeType, Null: Nullable<Wrapped = E>, Ix: IndexType>
     /// ```
     /// use petgraph::matrix_graph::MatrixGraph;
     ///
-    /// let gr = MatrixGraph::<(), i32>::from_edges(&[
+    /// let gr = MatrixGraph::<(), i32>::from_edges([
     ///     (0, 1), (0, 2), (0, 3),
     ///     (1, 2), (1, 3),
     ///     (2, 3),
@@ -1381,8 +1381,8 @@ mod tests {
         let c = g.add_node('c');
         g.add_edge(a, b, true);
         g.add_edge(b, c, false);
-        assert_eq!(*g.edge_weight(a, b), true);
-        assert_eq!(*g.edge_weight(b, c), false);
+        assert!(*g.edge_weight(a, b));
+        assert!(!(*g.edge_weight(b, c)));
     }
 
     #[test]
@@ -1602,7 +1602,7 @@ mod tests {
 
     #[test]
     fn test_edges_directed() {
-        let g: MatrixGraph<char, bool> = MatrixGraph::from_edges(&[
+        let g: MatrixGraph<char, bool> = MatrixGraph::from_edges([
             (0, 5),
             (0, 2),
             (0, 3),
@@ -1633,7 +1633,7 @@ mod tests {
 
     #[test]
     fn test_edges_undirected() {
-        let g: UnMatrix<char, bool> = UnMatrix::from_edges(&[
+        let g: UnMatrix<char, bool> = UnMatrix::from_edges([
             (0, 5),
             (0, 2),
             (0, 3),
@@ -1668,7 +1668,7 @@ mod tests {
 
     #[test]
     fn test_edge_references() {
-        let g: MatrixGraph<char, bool> = MatrixGraph::from_edges(&[
+        let g: MatrixGraph<char, bool> = MatrixGraph::from_edges([
             (0, 5),
             (0, 2),
             (0, 3),
@@ -1685,7 +1685,7 @@ mod tests {
 
     #[test]
     fn test_edge_references_undirected() {
-        let g: UnMatrix<char, bool> = UnMatrix::from_edges(&[
+        let g: UnMatrix<char, bool> = UnMatrix::from_edges([
             (0, 5),
             (0, 2),
             (0, 3),

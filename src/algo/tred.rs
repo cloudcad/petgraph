@@ -41,7 +41,7 @@ use fixedbitset::FixedBitSet;
 /// let second = g.add_node("second child");
 /// let top = g.add_node("top");
 /// let first = g.add_node("first child");
-/// g.extend_with_edges(&[(top, second), (top, first), (first, second)]);
+/// g.extend_with_edges([(top, second), (top, first), (first, second)]);
 ///
 /// let toposort = vec![top, first, second];
 ///

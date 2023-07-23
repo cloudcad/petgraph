@@ -277,11 +277,7 @@ enum Label<G: GraphBase> {
 
 impl<G: GraphBase> Label<G> {
     fn is_outer(&self) -> bool {
-        self != &Label::None
-            && !match self {
-                Label::Flag(_) => true,
-                _ => false,
-            }
+        self != &Label::None && !matches!(self, Label::Flag(_))
     }
 
     fn is_inner(&self) -> bool {
@@ -296,16 +292,7 @@ impl<G: GraphBase> Label<G> {
     }
 
     fn is_flagged(&self, edge: G::EdgeId) -> bool {
-        match self {
-            Label::Flag(flag) if flag == &edge => true,
-            _ => false,
-        }
-    }
-}
-
-impl<G: GraphBase> Default for Label<G> {
-    fn default() -> Self {
-        Label::None
+        matches!(self, Label::Flag(flag) if flag == &edge)
     }
 }
 
@@ -357,7 +344,7 @@ impl<G: GraphBase> PartialEq for Label<G> {
 /// let d = graph.add_node(());
 /// let e = graph.add_node(());
 /// let f = graph.add_node(());
-/// graph.extend_with_edges(&[(a, b), (a, c), (b, c), (b, d), (c, e), (d, e), (d, f)]);
+/// graph.extend_with_edges([(a, b), (a, c), (b, c), (b, d), (c, e), (d, e), (d, f)]);
 ///
 /// let matching = maximum_matching(&graph);
 /// assert!(matching.contains_edge(a, b));
@@ -494,8 +481,8 @@ fn find_join<G, F>(
     graph: &G,
     edge: G::EdgeRef,
     mate: &[Option<G::NodeId>],
-    label: &mut Vec<Label<G>>,
-    first_inner: &mut Vec<usize>,
+    label: &mut [Label<G>],
+    first_inner: &mut [usize],
     mut visitor: F,
 ) where
     G: IntoEdges + NodeIndexable + Visitable,

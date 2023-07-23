@@ -26,7 +26,7 @@ use crate::{
 /// let c = graph.add_node("c");
 /// let d = graph.add_node("d");
 ///
-/// graph.extend_with_edges(&[(a, b, 1), (b, c, 1), (c, d, 1), (a, b, 1), (b, d, 1)]);
+/// graph.extend_with_edges([(a, b, 1), (b, c, 1), (c, d, 1), (a, b, 1), (b, d, 1)]);
 ///
 /// let ways = algo::all_simple_paths::<Vec<_>, _>(&graph, a, d, 0, None)
 ///   .collect::<Vec<_>>();
@@ -113,7 +113,7 @@ mod test {
 
     #[test]
     fn test_all_simple_paths() {
-        let graph = DiGraph::<i32, i32, _>::from_edges(&[
+        let graph = DiGraph::<i32, i32, _>::from_edges([
             (0, 1),
             (0, 2),
             (0, 3),
@@ -154,7 +154,7 @@ mod test {
 
     #[test]
     fn test_one_simple_path() {
-        let graph = DiGraph::<i32, i32, _>::from_edges(&[(0, 1), (2, 1)]);
+        let graph = DiGraph::<i32, i32, _>::from_edges([(0, 1), (2, 1)]);
 
         let expexted_simple_paths_0_to_1 = &[vec![0usize, 1]];
         println!("{}", Dot::new(&graph));
@@ -169,7 +169,7 @@ mod test {
 
     #[test]
     fn test_no_simple_paths() {
-        let graph = DiGraph::<i32, i32, _>::from_edges(&[(0, 1), (2, 1)]);
+        let graph = DiGraph::<i32, i32, _>::from_edges([(0, 1), (2, 1)]);
 
         println!("{}", Dot::new(&graph));
         let actual_simple_paths_0_to_2: Vec<Vec<_>> =

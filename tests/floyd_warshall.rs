@@ -14,7 +14,7 @@ fn floyd_warshall_uniform_weight() {
     let g = graph.add_node(());
     let h = graph.add_node(());
 
-    graph.extend_with_edges(&[
+    graph.extend_with_edges([
         (a, b),
         (b, c),
         (c, d),
@@ -100,7 +100,7 @@ fn floyd_warshall_uniform_weight() {
     .iter()
     .cloned()
     .collect();
-    let res = floyd_warshall(&graph, |_| 1 as i32).unwrap();
+    let res = floyd_warshall(&graph, |_| 1_i32).unwrap();
 
     let nodes = [a, b, c, d, e, f, g, h];
     for node1 in &nodes {
@@ -121,7 +121,7 @@ fn floyd_warshall_weighted() {
     let c = graph.add_node(());
     let d = graph.add_node(());
 
-    graph.extend_with_edges(&[(a, b), (a, c), (a, d), (b, c), (b, d), (c, d)]);
+    graph.extend_with_edges([(a, b), (a, c), (a, d), (b, c), (b, d), (c, d)]);
 
     let inf = std::i32::MAX;
     let expected_res: HashMap<(NodeIndex, NodeIndex), i32> = [
@@ -189,7 +189,7 @@ fn floyd_warshall_weighted_undirected() {
     let c = graph.add_node(());
     let d = graph.add_node(());
 
-    graph.extend_with_edges(&[(a, b), (a, c), (a, d), (b, d), (c, b), (c, d)]);
+    graph.extend_with_edges([(a, b), (a, c), (a, d), (b, d), (c, b), (c, d)]);
 
     let inf = std::i32::MAX;
     let expected_res: HashMap<(NodeIndex, NodeIndex), i32> = [
@@ -256,7 +256,7 @@ fn floyd_warshall_negative_cycle() {
     let b = graph.add_node(());
     let c = graph.add_node(());
 
-    graph.extend_with_edges(&[(a, b), (b, c), (c, a)]);
+    graph.extend_with_edges([(a, b), (b, c), (c, a)]);
 
     let inf = std::i32::MAX;
 

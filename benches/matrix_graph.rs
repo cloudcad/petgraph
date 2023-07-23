@@ -3,8 +3,6 @@
 extern crate petgraph;
 extern crate test;
 
-use test::Bencher;
-
 use petgraph::algo;
 use petgraph::matrix_graph::{node_index, MatrixGraph};
 use petgraph::{Directed, EdgeType, Incoming, Outgoing};
@@ -173,75 +171,75 @@ fn parse_matrix<Ty: EdgeType>(s: &str) -> MatrixGraph<(), (), Ty> {
 }
 
 #[bench]
-fn full_edges_out(bench: &mut Bencher) {
+fn full_edges_out(bench: &mut test::Bencher) {
     let a = parse_matrix::<Directed>(FULL);
     bench.iter(|| a.edges_directed(node_index(1), Outgoing).count())
 }
 
 #[bench]
-fn full_edges_in(bench: &mut Bencher) {
+fn full_edges_in(bench: &mut test::Bencher) {
     let a = parse_matrix::<Directed>(FULL);
     bench.iter(|| a.edges_directed(node_index(1), Incoming).count())
 }
 
 #[bench]
-fn full_neighbors_out(bench: &mut Bencher) {
+fn full_neighbors_out(bench: &mut test::Bencher) {
     let a = parse_matrix::<Directed>(FULL);
     bench.iter(|| a.neighbors_directed(node_index(1), Outgoing).count())
 }
 
 #[bench]
-fn full_neighbors_in(bench: &mut Bencher) {
+fn full_neighbors_in(bench: &mut test::Bencher) {
     let a = parse_matrix::<Directed>(FULL);
 
     bench.iter(|| a.neighbors_directed(node_index(1), Incoming).count())
 }
 
 #[bench]
-fn full_kosaraju_sccs(bench: &mut Bencher) {
+fn full_kosaraju_sccs(bench: &mut test::Bencher) {
     let a = parse_matrix::<Directed>(FULL);
     bench.iter(|| algo::kosaraju_scc(&a));
 }
 
 #[bench]
-fn full_tarjan_sccs(bench: &mut Bencher) {
+fn full_tarjan_sccs(bench: &mut test::Bencher) {
     let a = parse_matrix::<Directed>(FULL);
     bench.iter(|| algo::tarjan_scc(&a));
 }
 
 #[bench]
-fn bigger_edges_out(bench: &mut Bencher) {
+fn bigger_edges_out(bench: &mut test::Bencher) {
     let a = parse_matrix::<Directed>(BIGGER);
     bench.iter(|| a.edges_directed(node_index(1), Outgoing).count())
 }
 
 #[bench]
-fn bigger_edges_in(bench: &mut Bencher) {
+fn bigger_edges_in(bench: &mut test::Bencher) {
     let a = parse_matrix::<Directed>(BIGGER);
     bench.iter(|| a.edges_directed(node_index(1), Incoming).count())
 }
 
 #[bench]
-fn bigger_neighbors_out(bench: &mut Bencher) {
+fn bigger_neighbors_out(bench: &mut test::Bencher) {
     let a = parse_matrix::<Directed>(BIGGER);
     bench.iter(|| a.neighbors_directed(node_index(1), Outgoing).count())
 }
 
 #[bench]
-fn bigger_neighbors_in(bench: &mut Bencher) {
+fn bigger_neighbors_in(bench: &mut test::Bencher) {
     let a = parse_matrix::<Directed>(BIGGER);
 
     bench.iter(|| a.neighbors_directed(node_index(1), Incoming).count())
 }
 
 #[bench]
-fn bigger_kosaraju_sccs(bench: &mut Bencher) {
+fn bigger_kosaraju_sccs(bench: &mut test::Bencher) {
     let a = parse_matrix::<Directed>(BIGGER);
     bench.iter(|| algo::kosaraju_scc(&a));
 }
 
 #[bench]
-fn bigger_tarjan_sccs(bench: &mut Bencher) {
+fn bigger_tarjan_sccs(bench: &mut test::Bencher) {
     let a = parse_matrix::<Directed>(BIGGER);
     bench.iter(|| algo::tarjan_scc(&a));
 }

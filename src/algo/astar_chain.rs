@@ -67,6 +67,11 @@ use crate::algo::Measure;
 /// Returns the total cost + the path of subsequent `NodeId` from start to finish, if one was
 /// found.
 
+pub struct AstarResult<G: GraphBase, K> {
+    pub cost: K,
+    pub chain: Vec<(G::NodeId, G::NodeId, G::EdgeId)>,
+}
+
 pub fn astar_chain<G, F, H, K, IsGoal>(
     graph: G,
     start: G::NodeId,
@@ -75,9 +80,9 @@ pub fn astar_chain<G, F, H, K, IsGoal>(
     mut estimate_cost: H,
     min_cost: Option<K>,
     max_cost: Option<K>,
-) -> Option<(K, Vec<(G::NodeId, G::NodeId, G::EdgeId)>)>
+) -> Option<AstarResult<G, K>>
 where
-    G: IntoEdges + Visitable,
+    G: IntoEdges + Visitable + GraphBase,
     IsGoal: FnMut(G::NodeId) -> bool,
     G::NodeId: Eq + Hash,
     F: FnMut(G::EdgeRef) -> K,
@@ -114,11 +119,11 @@ where
             let chain = path_tracker.reconstruct_path_to(node);
 
             // no chain so return None
-            if chain.len() == 0 {
+            if chain.is_empty() {
                 return None;
             }
 
-            return Some((cost, chain));
+            return Some(AstarResult { cost, chain });
         }
 
         // This lookup can be unwrapped without fear of panic since the node was necessarily scored

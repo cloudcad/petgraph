@@ -11,7 +11,7 @@ use crate::graphmap::{GraphMap, NodeTrait};
 use crate::visit::NodeIndexable;
 
 /// Return a random float in the range [0, 1.)
-fn random_01<G: Gen>(g: &mut G) -> f64 {
+fn random_01(g: &mut Gen) -> f64 {
     // from rand
     let bits = 53;
     let scale = 1. / ((1u64 << bits) as f64);
@@ -35,7 +35,7 @@ where
     Ty: EdgeType + Send + 'static,
     Ix: IndexType + Send,
 {
-    fn arbitrary<G: Gen>(g: &mut G) -> Self {
+    fn arbitrary(g: &mut Gen) -> Self {
         let nodes = usize::arbitrary(g);
         if nodes == 0 {
             return Graph::with_capacity(0, 0);
@@ -103,7 +103,7 @@ where
     Ty: EdgeType + Send + 'static,
     Ix: IndexType + Send,
 {
-    fn arbitrary<G: Gen>(g: &mut G) -> Self {
+    fn arbitrary(g: &mut Gen) -> Self {
         let nodes = usize::arbitrary(g);
         if nodes == 0 {
             return StableGraph::with_capacity(0, 0);
@@ -182,7 +182,7 @@ where
     E: Arbitrary,
     Ty: EdgeType + Clone + Send + 'static,
 {
-    fn arbitrary<G: Gen>(g: &mut G) -> Self {
+    fn arbitrary(g: &mut Gen) -> Self {
         let nodes = usize::arbitrary(g);
         if nodes == 0 {
             return GraphMap::with_capacity(0, 0);

@@ -96,11 +96,7 @@ impl<B> ControlFlow for Control<B> {
         Control::Continue
     }
     fn should_break(&self) -> bool {
-        if let Control::Break(_) = *self {
-            true
-        } else {
-            false
-        }
+        matches!(*self, Control::Break(_))
     }
     fn should_prune(&self) -> bool {
         match *self {
@@ -212,7 +208,7 @@ impl<B> Default for Control<B> {
 /// use petgraph::visit::depth_first_search;
 /// use petgraph::visit::{DfsEvent, Time};
 ///
-/// let gr: Graph<(), ()> = Graph::from_edges(&[(0, 1), (1, 2), (1, 1), (2, 1)]);
+/// let gr: Graph<(), ()> = Graph::from_edges([(0, 1), (1, 2), (1, 1), (2, 1)]);
 /// let start = n(0);
 /// let mut back_edges = 0;
 /// let mut discover_time = 0;

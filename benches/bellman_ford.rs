@@ -5,12 +5,11 @@ extern crate test;
 
 use petgraph::prelude::*;
 use std::cmp::{max, min};
-use test::Bencher;
 
 use petgraph::algo::{bellman_ford, find_negative_cycle};
 
 #[bench]
-fn bellman_ford_bench(bench: &mut Bencher) {
+fn bellman_ford_bench(bench: &mut test::Bencher) {
     static NODE_COUNT: usize = 100;
     let mut g = Graph::new();
     let nodes: Vec<NodeIndex<_>> = (0..NODE_COUNT).into_iter().map(|i| g.add_node(i)).collect();
@@ -35,7 +34,7 @@ fn bellman_ford_bench(bench: &mut Bencher) {
 }
 
 #[bench]
-fn find_negative_cycle_bench(bench: &mut Bencher) {
+fn find_negative_cycle_bench(bench: &mut test::Bencher) {
     static NODE_COUNT: usize = 100;
     let mut g = Graph::new();
     let nodes: Vec<NodeIndex<_>> = (0..NODE_COUNT).into_iter().map(|i| g.add_node(i)).collect();

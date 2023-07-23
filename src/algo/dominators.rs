@@ -132,7 +132,7 @@ where
     type Item = N;
 
     fn next(&mut self) -> Option<Self::Item> {
-        while let Some(next) = self.iter.next() {
+        for next in self.iter.by_ref() {
             if next.1 == &self.node {
                 return Some(*next.0);
             }

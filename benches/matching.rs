@@ -3,8 +3,6 @@
 extern crate petgraph;
 extern crate test;
 
-use test::Bencher;
-
 #[allow(dead_code)]
 mod common;
 use common::*;
@@ -30,49 +28,49 @@ fn huge() -> UnGraph<(), ()> {
 }
 
 #[bench]
-fn greedy_matching_bipartite(bench: &mut Bencher) {
+fn greedy_matching_bipartite(bench: &mut test::Bencher) {
     let g = ungraph().bipartite();
     bench.iter(|| greedy_matching(&g));
 }
 
 #[bench]
-fn greedy_matching_full(bench: &mut Bencher) {
+fn greedy_matching_full(bench: &mut test::Bencher) {
     let g = ungraph().full_a();
     bench.iter(|| greedy_matching(&g));
 }
 
 #[bench]
-fn greedy_matching_bigger(bench: &mut Bencher) {
+fn greedy_matching_bigger(bench: &mut test::Bencher) {
     let g = ungraph().bigger();
     bench.iter(|| greedy_matching(&g));
 }
 
 #[bench]
-fn greedy_matching_huge(bench: &mut Bencher) {
+fn greedy_matching_huge(bench: &mut test::Bencher) {
     let g = huge();
     bench.iter(|| greedy_matching(&g));
 }
 
 #[bench]
-fn maximum_matching_bipartite(bench: &mut Bencher) {
+fn maximum_matching_bipartite(bench: &mut test::Bencher) {
     let g = ungraph().bipartite();
     bench.iter(|| maximum_matching(&g));
 }
 
 #[bench]
-fn maximum_matching_full(bench: &mut Bencher) {
+fn maximum_matching_full(bench: &mut test::Bencher) {
     let g = ungraph().full_a();
     bench.iter(|| maximum_matching(&g));
 }
 
 #[bench]
-fn maximum_matching_bigger(bench: &mut Bencher) {
+fn maximum_matching_bigger(bench: &mut test::Bencher) {
     let g = ungraph().bigger();
     bench.iter(|| maximum_matching(&g));
 }
 
 #[bench]
-fn maximum_matching_huge(bench: &mut Bencher) {
+fn maximum_matching_huge(bench: &mut test::Bencher) {
     let g = huge();
     bench.iter(|| maximum_matching(&g));
 }

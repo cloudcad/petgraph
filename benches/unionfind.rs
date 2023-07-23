@@ -3,8 +3,6 @@
 extern crate petgraph;
 extern crate test;
 
-use test::Bencher;
-
 #[allow(dead_code)]
 mod common;
 use common::*;
@@ -12,7 +10,7 @@ use common::*;
 use petgraph::algo::{connected_components, is_cyclic_undirected, min_spanning_tree};
 
 #[bench]
-fn connected_components_praust_undir_bench(bench: &mut Bencher) {
+fn connected_components_praust_undir_bench(bench: &mut test::Bencher) {
     let a = ungraph().praust_a();
     let b = ungraph().praust_b();
 
@@ -20,7 +18,7 @@ fn connected_components_praust_undir_bench(bench: &mut Bencher) {
 }
 
 #[bench]
-fn connected_components_praust_dir_bench(bench: &mut Bencher) {
+fn connected_components_praust_dir_bench(bench: &mut test::Bencher) {
     let a = digraph().praust_a();
     let b = digraph().praust_b();
 
@@ -28,7 +26,7 @@ fn connected_components_praust_dir_bench(bench: &mut Bencher) {
 }
 
 #[bench]
-fn connected_components_full_undir_bench(bench: &mut Bencher) {
+fn connected_components_full_undir_bench(bench: &mut test::Bencher) {
     let a = ungraph().full_a();
     let b = ungraph().full_b();
 
@@ -36,7 +34,7 @@ fn connected_components_full_undir_bench(bench: &mut Bencher) {
 }
 
 #[bench]
-fn connected_components_full_dir_bench(bench: &mut Bencher) {
+fn connected_components_full_dir_bench(bench: &mut test::Bencher) {
     let a = digraph().full_a();
     let b = digraph().full_b();
 
@@ -44,7 +42,7 @@ fn connected_components_full_dir_bench(bench: &mut Bencher) {
 }
 
 #[bench]
-fn connected_components_petersen_undir_bench(bench: &mut Bencher) {
+fn connected_components_petersen_undir_bench(bench: &mut test::Bencher) {
     let a = ungraph().petersen_a();
     let b = ungraph().petersen_b();
 
@@ -52,7 +50,7 @@ fn connected_components_petersen_undir_bench(bench: &mut Bencher) {
 }
 
 #[bench]
-fn connected_components_petersen_dir_bench(bench: &mut Bencher) {
+fn connected_components_petersen_dir_bench(bench: &mut test::Bencher) {
     let a = digraph().petersen_a();
     let b = digraph().petersen_b();
 
@@ -60,7 +58,7 @@ fn connected_components_petersen_dir_bench(bench: &mut Bencher) {
 }
 
 #[bench]
-fn is_cyclic_undirected_praust_undir_bench(bench: &mut Bencher) {
+fn is_cyclic_undirected_praust_undir_bench(bench: &mut test::Bencher) {
     let a = ungraph().praust_a();
     let b = ungraph().praust_b();
 
@@ -68,7 +66,7 @@ fn is_cyclic_undirected_praust_undir_bench(bench: &mut Bencher) {
 }
 
 #[bench]
-fn is_cyclic_undirected_praust_dir_bench(bench: &mut Bencher) {
+fn is_cyclic_undirected_praust_dir_bench(bench: &mut test::Bencher) {
     let a = digraph().praust_a();
     let b = digraph().praust_b();
 
@@ -76,7 +74,7 @@ fn is_cyclic_undirected_praust_dir_bench(bench: &mut Bencher) {
 }
 
 #[bench]
-fn is_cyclic_undirected_full_undir_bench(bench: &mut Bencher) {
+fn is_cyclic_undirected_full_undir_bench(bench: &mut test::Bencher) {
     let a = ungraph().full_a();
     let b = ungraph().full_b();
 
@@ -84,7 +82,7 @@ fn is_cyclic_undirected_full_undir_bench(bench: &mut Bencher) {
 }
 
 #[bench]
-fn is_cyclic_undirected_full_dir_bench(bench: &mut Bencher) {
+fn is_cyclic_undirected_full_dir_bench(bench: &mut test::Bencher) {
     let a = digraph().full_a();
     let b = digraph().full_b();
 
@@ -92,7 +90,7 @@ fn is_cyclic_undirected_full_dir_bench(bench: &mut Bencher) {
 }
 
 #[bench]
-fn is_cyclic_undirected_petersen_undir_bench(bench: &mut Bencher) {
+fn is_cyclic_undirected_petersen_undir_bench(bench: &mut test::Bencher) {
     let a = ungraph().petersen_a();
     let b = ungraph().petersen_b();
 
@@ -100,7 +98,7 @@ fn is_cyclic_undirected_petersen_undir_bench(bench: &mut Bencher) {
 }
 
 #[bench]
-fn is_cyclic_undirected_petersen_dir_bench(bench: &mut Bencher) {
+fn is_cyclic_undirected_petersen_dir_bench(bench: &mut test::Bencher) {
     let a = digraph().petersen_a();
     let b = digraph().petersen_b();
 
@@ -108,7 +106,7 @@ fn is_cyclic_undirected_petersen_dir_bench(bench: &mut Bencher) {
 }
 
 #[bench]
-fn min_spanning_tree_praust_undir_bench(bench: &mut Bencher) {
+fn min_spanning_tree_praust_undir_bench(bench: &mut test::Bencher) {
     let a = ungraph().praust_a();
     let b = ungraph().praust_b();
 
@@ -116,7 +114,7 @@ fn min_spanning_tree_praust_undir_bench(bench: &mut Bencher) {
 }
 
 #[bench]
-fn min_spanning_tree_praust_dir_bench(bench: &mut Bencher) {
+fn min_spanning_tree_praust_dir_bench(bench: &mut test::Bencher) {
     let a = digraph().praust_a();
     let b = digraph().praust_b();
 
@@ -124,7 +122,7 @@ fn min_spanning_tree_praust_dir_bench(bench: &mut Bencher) {
 }
 
 #[bench]
-fn min_spanning_tree_full_undir_bench(bench: &mut Bencher) {
+fn min_spanning_tree_full_undir_bench(bench: &mut test::Bencher) {
     let a = ungraph().full_a();
     let b = ungraph().full_b();
 
@@ -132,7 +130,7 @@ fn min_spanning_tree_full_undir_bench(bench: &mut Bencher) {
 }
 
 #[bench]
-fn min_spanning_tree_full_dir_bench(bench: &mut Bencher) {
+fn min_spanning_tree_full_dir_bench(bench: &mut test::Bencher) {
     let a = digraph().full_a();
     let b = digraph().full_b();
 
@@ -140,7 +138,7 @@ fn min_spanning_tree_full_dir_bench(bench: &mut Bencher) {
 }
 
 #[bench]
-fn min_spanning_tree_petersen_undir_bench(bench: &mut Bencher) {
+fn min_spanning_tree_petersen_undir_bench(bench: &mut test::Bencher) {
     let a = ungraph().petersen_a();
     let b = ungraph().petersen_b();
 
@@ -148,7 +146,7 @@ fn min_spanning_tree_petersen_undir_bench(bench: &mut Bencher) {
 }
 
 #[bench]
-fn min_spanning_tree_petersen_dir_bench(bench: &mut Bencher) {
+fn min_spanning_tree_petersen_dir_bench(bench: &mut test::Bencher) {
     let a = digraph().petersen_a();
     let b = digraph().petersen_b();
 

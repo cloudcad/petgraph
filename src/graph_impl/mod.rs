@@ -31,6 +31,9 @@ pub type DefaultIx = u32;
 ///
 /// Marked `unsafe` because: the trait must faithfully preserve
 /// and convert index values.
+/// # Safety
+///
+/// This trait must faithfully preserve and convert index values.
 pub unsafe trait IndexType: Copy + Default + Hash + Ord + fmt::Debug + 'static {
     fn new(x: usize) -> Self;
     fn index(&self) -> usize;
@@ -1733,14 +1736,15 @@ where
     type Item = EdgeReference<'a, E, Ix>;
 
     fn next(&mut self) -> Option<EdgeReference<'a, E, Ix>> {
+        #[allow(clippy::while_let_on_iterator)]
         while let Some(edge) = self.edges.next() {
             if edge.node[1] == self.target_node {
                 return Some(edge);
             }
         }
-
         None
     }
+
     fn size_hint(&self) -> (usize, Option<usize>) {
         let (_, upper) = self.edges.size_hint();
         (0, upper)

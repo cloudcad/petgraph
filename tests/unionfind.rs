@@ -1,8 +1,12 @@
 extern crate petgraph;
 extern crate rand;
 
+use crate::rand::Rng;
 use petgraph::unionfind::UnionFind;
-use rand::{thread_rng, ChaChaRng, Rng, SeedableRng};
+use rand::thread_rng;
+use rand_chacha::rand_core::SeedableRng;
+use rand_chacha::ChaChaRng;
+
 use std::collections::HashSet;
 
 #[test]
@@ -67,8 +71,8 @@ fn uf_rand() {
     let mut rng = ChaChaRng::from_rng(thread_rng()).unwrap();
     let mut u = UnionFind::new(n);
     for _ in 0..100 {
-        let a = rng.gen_range(0, n);
-        let b = rng.gen_range(0, n);
+        let a = rng.gen_range(0..n);
+        let b = rng.gen_range(0..n);
         let ar = u.find(a);
         let br = u.find(b);
         assert_eq!(ar != br, u.union(a, b));

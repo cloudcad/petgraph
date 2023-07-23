@@ -345,7 +345,7 @@ where
             .row
             .get(a.index() + 1)
             .cloned()
-            .unwrap_or_else(|| self.column.len());
+            .unwrap_or(self.column.len());
         index..end
     }
 
@@ -929,7 +929,7 @@ mod tests {
         .unwrap();
         println!("{:?}", m);
         let mut dfs = Dfs::new(&m, 0);
-        while let Some(_) = dfs.next(&m) {}
+        while dfs.next(&m).is_some() {}
         for i in 0..m.node_count() - 2 {
             assert!(dfs.discovered.is_visited(&i), "visited {}", i)
         }
@@ -941,7 +941,7 @@ mod tests {
 
         dfs.reset(&m);
         dfs.move_to(0);
-        while let Some(_) = dfs.next(&m) {}
+        while dfs.next(&m).is_some() {}
 
         for i in 0..m.node_count() {
             assert!(dfs.discovered[i], "visited {}", i)

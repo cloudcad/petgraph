@@ -1,5 +1,5 @@
 use petgraph::{graph::DiGraph, graphmap::NodeTrait};
-use quickcheck::{Arbitrary, Gen, StdGen};
+use quickcheck::{Arbitrary, Gen};
 use std::ops::Deref;
 
 #[derive(Copy, Clone, Debug)]
@@ -17,9 +17,9 @@ impl<T> Arbitrary for Small<T>
 where
     T: Arbitrary,
 {
-    fn arbitrary<G: Gen>(g: &mut G) -> Self {
+    fn arbitrary(g: &mut Gen) -> Self {
         let sz = g.size() / 2;
-        Small(T::arbitrary(&mut StdGen::new(g, sz)))
+        Small(T::arbitrary(&mut quickcheck::StdGen::new(g, sz)))
     }
 
     fn shrink(&self) -> Box<dyn Iterator<Item = Self>> {
@@ -40,7 +40,7 @@ where
     N: NodeTrait + Arbitrary,
     E: Arbitrary,
 {
-    fn arbitrary<G: Gen>(g: &mut G) -> Self {
+    fn arbitrary(g: &mut Gen) -> Self {
         let nodes = usize::arbitrary(g) / 4;
         if nodes == 0 {
             return Tournament(DiGraph::with_capacity(0, 0));

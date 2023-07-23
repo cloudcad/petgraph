@@ -20,7 +20,6 @@ use std::hash::Hash;
 use itertools::assert_equal;
 use itertools::cloned;
 use quickcheck::{Arbitrary, Gen};
-use rand::Rng;
 
 use petgraph::algo::{
     bellman_ford, condensation, dijkstra, find_negative_cycle, floyd_warshall,
@@ -344,9 +343,9 @@ fn graph_remove_edge() {
         }
         assert_graph_consistent(&g);
         assert!(g.find_edge(a, b).is_none());
-        assert!(g.neighbors(a).find(|x| *x == b).is_none());
+        assert!(!g.neighbors(a).any(|x| x == b));
         if !g.is_directed() {
-            assert!(g.neighbors(b).find(|x| *x == a).is_none());
+            assert!(!g.neighbors(b).any(|x| x == a));
         }
         true
     }
@@ -369,10 +368,10 @@ fn stable_graph_remove_edge() {
         }
         //assert_graph_consistent(&g);
         assert!(g.find_edge(a, b).is_none());
-        assert!(g.neighbors(a).find(|x| *x == b).is_none());
+        assert!(!g.neighbors(a).any(|x| x == b));
         if !g.is_directed() {
             assert!(g.find_edge(b, a).is_none());
-            assert!(g.neighbors(b).find(|x| *x == a).is_none());
+            assert!(!g.neighbors(b).any(|x| x == a));
         }
         true
     }
@@ -407,10 +406,10 @@ fn stable_graph_add_remove_edges() {
                 (a, b),
                 g
             );
-            assert!(g.neighbors(a).find(|x| *x == b).is_none());
+            assert!(!g.neighbors(a).any(|x| x == b));
             if !g.is_directed() {
                 assert!(g.find_edge(b, a).is_none());
-                assert!(g.neighbors(b).find(|x| *x == a).is_none());
+                assert!(!g.neighbors(b).any(|x| x == a));
             }
         }
         true
@@ -458,7 +457,7 @@ fn graphmap_remove() {
             assert_eq!(contains, g.contains_edge(b, a));
         }
         assert_eq!(g.remove_edge(a, b).is_some(), contains);
-        assert!(!g.contains_edge(a, b) && g.neighbors(a).find(|x| *x == b).is_none());
+        assert!(!g.contains_edge(a, b) && !g.neighbors(a).any(|x| x == b));
         //(g.is_directed() || g.neighbors(b).find(|x| *x == a).is_none()));
         assert!(g.remove_edge(a, b).is_none());
         assert_graphmap_consistent(&g);
@@ -473,9 +472,7 @@ fn graphmap_add_remove() {
     fn prop(mut g: UnGraphMap<i8, ()>, a: i8, b: i8) -> bool {
         assert_eq!(g.contains_edge(a, b), g.add_edge(a, b, ()).is_some());
         g.remove_edge(a, b);
-        !g.contains_edge(a, b)
-            && g.neighbors(a).find(|x| *x == b).is_none()
-            && g.neighbors(b).find(|x| *x == a).is_none()
+        !g.contains_edge(a, b) && !g.neighbors(a).any(|x| x == b) && !g.neighbors(b).any(|x| x == a)
     }
     quickcheck::quickcheck(prop as fn(_, _, _) -> bool);
 }
@@ -568,38 +565,39 @@ fn graph_condensation_acyclic() {
 }
 
 #[derive(Debug, Clone)]
-struct DAG<N: Default + Clone + Send + 'static>(Graph<N, ()>);
+struct Dag<N: Default + Clone + Send + 'static>(Graph<N, ()>);
 
-impl<N: Default + Clone + Send + 'static> Arbitrary for DAG<N> {
-    fn arbitrary<G: Gen>(g: &mut G) -> Self {
+impl<N: Default + Clone + Send + 'static> Arbitrary for Dag<N> {
+    fn arbitrary(g: &mut Gen) -> Self {
         let nodes = usize::arbitrary(g);
         if nodes == 0 {
-            return DAG(Graph::with_capacity(0, 0));
+            return Dag(Graph::with_capacity(0, 0));
         }
-        let split = g.gen_range(0., 1.);
+        let split: f64 = *g.choose(&[0.0, 1.0]).unwrap();
         let max_width = f64::sqrt(nodes as f64) as usize;
         let tall = (max_width as f64 * split) as usize;
         let fat = max_width - tall;
 
-        let edge_prob = 1. - (1. - g.gen_range(0., 1.)) * (1. - g.gen_range(0., 1.));
+        let edge_prob =
+            1. - (1. - *g.choose(&[0.0, 1.0]).unwrap()) * (1. - *g.choose(&[0.0, 1.0]).unwrap());
         let edges = ((nodes as f64).powi(2) * edge_prob) as usize;
         let mut gr = Graph::with_capacity(nodes, edges);
         let mut nodes = 0;
         for _ in 0..tall {
-            let cur_nodes = g.gen_range(0, fat);
+            let cur_nodes: usize = *g.choose(&(0..fat).collect::<Vec<_>>()).unwrap();
             for _ in 0..cur_nodes {
                 gr.add_node(N::default());
             }
             for j in 0..nodes {
                 for k in 0..cur_nodes {
-                    if g.gen_range(0., 1.) < edge_prob {
+                    if *g.choose(&[0.0, 1.0]).unwrap() < edge_prob {
                         gr.add_edge(NodeIndex::new(j), NodeIndex::new(k + nodes), ());
                     }
                 }
             }
             nodes += cur_nodes;
         }
-        DAG(gr)
+        Dag(gr)
     }
 
     // shrink the graph by splitting it in two by a very
@@ -615,11 +613,14 @@ impl<N: Default + Clone + Send + 'static> Arbitrary for DAG<N> {
                         None
                     }
                 },
-                |_, w| Some(w.clone()),
+                |_, _w| {
+                    // *w;
+                    Some(())
+                },
             );
             // make sure we shrink
             if gr.node_count() < self_.0.node_count() {
-                Some(DAG(gr))
+                Some(Dag(gr))
             } else {
                 None
             }
@@ -685,7 +686,7 @@ fn subset_is_topo_order<N>(gr: &Graph<N, (), Directed>, order: &[NodeIndex]) -> 
 
 #[test]
 fn full_topo() {
-    fn prop(DAG(gr): DAG<()>) -> bool {
+    fn prop(Dag(gr): Dag<()>) -> bool {
         let order = toposort(&gr, None).unwrap();
         is_topo_order(&gr, &order)
     }
@@ -694,7 +695,7 @@ fn full_topo() {
 
 #[test]
 fn full_topo_generic() {
-    fn prop_generic(DAG(mut gr): DAG<usize>) -> bool {
+    fn prop_generic(Dag(mut gr): Dag<usize>) -> bool {
         assert!(!is_cyclic_directed(&gr));
         let mut index = 0;
         let mut topo = Topo::new(&gr);
@@ -767,7 +768,7 @@ quickcheck! {
         let second_best_distances = k_shortest_path(&g, v, None, 2, |e| *e.weight());
         let dijkstra_distances = dijkstra(&g, v, None, |e| *e.weight());
         for v in second_best_distances.keys() {
-            if second_best_distances[&v] < dijkstra_distances[&v] {
+            if second_best_distances[v] < dijkstra_distances[v] {
                 return false;
             }
         }
@@ -914,7 +915,7 @@ quickcheck! {
         for (i, start) in gr.node_indices().enumerate() {
             if i >= 10 { break; } // testing all is too slow
             if let Some(path) = find_negative_cycle(&gr, start) {
-                assert!(path.len() >= 1);
+                assert!(!path.is_empty());
             }
         }
         true
@@ -1100,7 +1101,7 @@ where
 }
 
 quickcheck! {
-    fn test_tred(g: DAG<()>) -> bool {
+    fn test_tred(g: Dag<()>) -> bool {
         let acyclic = g.0;
         println!("acyclic graph {:#?}", &acyclic);
         let toposort = toposort(&acyclic, None).unwrap();

@@ -760,7 +760,7 @@ fn test_toposort() {
     let e = gr.add_node("E");
     let f = gr.add_node("F");
     let g = gr.add_node("G");
-    gr.extend_with_edges(&[
+    gr.extend_with_edges([
         (a, b, 7.),
         (a, d, 5.),
         (d, b, 9.),
@@ -859,7 +859,7 @@ fn assert_sccs_eq(
 
 #[test]
 fn scc() {
-    let gr: Graph<(), ()> = Graph::from_edges(&[
+    let gr: Graph<(), ()> = Graph::from_edges([
         (6, 0),
         (0, 3),
         (3, 6),
@@ -929,7 +929,7 @@ fn scc() {
 
     // Kosaraju bug from PR #60
     let mut gr = Graph::<(), ()>::new();
-    gr.extend_with_edges(&[(0, 0), (1, 0), (2, 0), (2, 1), (2, 2)]);
+    gr.extend_with_edges([(0, 0), (1, 0), (2, 0), (2, 1), (2, 2)]);
     gr.add_node(());
     // no order for the disconnected one
     assert_sccs_eq(
@@ -941,7 +941,7 @@ fn scc() {
 
 #[test]
 fn tarjan_scc() {
-    let gr: Graph<(), ()> = Graph::from_edges(&[
+    let gr: Graph<(), ()> = Graph::from_edges([
         (6, 0),
         (0, 3),
         (3, 6),
@@ -1009,7 +1009,7 @@ fn tarjan_scc() {
 
     // Kosaraju bug from PR #60
     let mut gr = Graph::<(), ()>::new();
-    gr.extend_with_edges(&[(0, 0), (1, 0), (2, 0), (2, 1), (2, 2)]);
+    gr.extend_with_edges([(0, 0), (1, 0), (2, 0), (2, 1), (2, 2)]);
     gr.add_node(());
     // no order for the disconnected one
     let mut result = Vec::new();
@@ -1023,7 +1023,7 @@ fn tarjan_scc() {
 
 #[test]
 fn condensation() {
-    let gr: Graph<(), ()> = Graph::from_edges(&[
+    let gr: Graph<(), ()> = Graph::from_edges([
         (6, 0),
         (0, 3),
         (3, 6),
@@ -1102,7 +1102,7 @@ fn oob_index() {
     let a = gr.add_node(0);
     let b = gr.add_node(1);
     gr.remove_node(a);
-    gr[b];
+    let _ = gr[b];
 }
 
 #[test]
@@ -1657,7 +1657,7 @@ fn map_filter_map() {
 fn from_edges() {
     let n = NodeIndex::new;
     let gr =
-        Graph::<(), (), Undirected>::from_edges(&[(0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 3)]);
+        Graph::<(), (), Undirected>::from_edges([(0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 3)]);
     assert_eq!(gr.node_count(), 4);
     assert_eq!(gr.edge_count(), 6);
     assert_eq!(gr.neighbors(n(0)).count(), 3);
@@ -1669,7 +1669,7 @@ fn from_edges() {
 
 #[test]
 fn retain() {
-    let mut gr = Graph::<i32, i32, Undirected>::from_edges(&[
+    let mut gr = Graph::<i32, i32, Undirected>::from_edges([
         (0, 1, 2),
         (1, 1, 1),
         (0, 2, 0),
@@ -1723,7 +1723,7 @@ fn neighbors_selfloops() {
     let a = gr.add_node("a");
     let b = gr.add_node("b");
     let c = gr.add_node("c");
-    gr.extend_with_edges(&[(a, a), (a, b), (c, a), (a, a)]);
+    gr.extend_with_edges([(a, a), (a, b), (c, a), (a, a)]);
 
     let out_edges = [a, a, b];
     let in_edges = [a, a, c];
@@ -1772,7 +1772,7 @@ fn neighbors_selfloops() {
     let a = gr.add_node("a");
     let b = gr.add_node("b");
     let c = gr.add_node("c");
-    gr.extend_with_edges(&[(a, a), (a, b), (c, a)]);
+    gr.extend_with_edges([(a, a), (a, b), (c, a)]);
 
     let out_edges = [a, b, c];
     let in_edges = [a, b, c];
@@ -1794,13 +1794,13 @@ fn neighbors_selfloops() {
     assert_eq!(&seen_undir, &undir_edges);
 }
 
-fn degree<'a, G>(g: G, node: G::NodeId) -> usize
+fn degree<G>(g: G, node: G::NodeId) -> usize
 where
     G: IntoNeighbors,
     G::NodeId: PartialEq,
 {
     // self loops count twice
-    let original_node = node.clone();
+    let original_node = node;
     let mut degree = 0;
     for v in g.neighbors(node) {
         degree += if v == original_node { 2 } else { 1 };
@@ -1811,7 +1811,7 @@ where
 #[cfg(feature = "graphmap")]
 #[test]
 fn degree_sequence() {
-    let mut gr = Graph::<usize, (), Undirected>::from_edges(&[
+    let mut gr = Graph::<usize, (), Undirected>::from_edges([
         (0, 1),
         (1, 2),
         (1, 3),
@@ -2072,7 +2072,7 @@ fn dfs_visit() {
     use petgraph::visit::DfsEvent::*;
     use petgraph::visit::{depth_first_search, Time};
     use petgraph::visit::{VisitMap, Visitable};
-    let gr: Graph<(), ()> = Graph::from_edges(&[
+    let gr: Graph<(), ()> = Graph::from_edges([
         (0, 5),
         (0, 2),
         (0, 3),
@@ -2174,10 +2174,10 @@ fn filtered_post_order() {
     use petgraph::visit::NodeFiltered;
 
     let mut gr: Graph<(), ()> =
-        Graph::from_edges(&[(0, 2), (1, 2), (0, 3), (1, 4), (2, 4), (4, 5), (3, 5)]);
+        Graph::from_edges([(0, 2), (1, 2), (0, 3), (1, 4), (2, 4), (4, 5), (3, 5)]);
     // map reachable nodes
     let mut dfs = Dfs::new(&gr, n(0));
-    while let Some(_) = dfs.next(&gr) {}
+    while dfs.next(&gr).is_some() {}
 
     let map = dfs.discovered;
     gr.add_edge(n(0), n(1), ());
@@ -2251,11 +2251,12 @@ fn filter_elements() {
     let mut g = DiGraph::<_, _>::from_elements(elements.iter().cloned());
     println!("{:#?}", g);
     assert!(g.contains_edge(n(1), n(5)));
-    let g2 =
-        DiGraph::<_, _>::from_elements(elements.iter().cloned().filter_elements(|elt| match elt {
-            Node { ref weight } if **weight == "B" => false,
-            _ => true,
-        }));
+    let g2 = DiGraph::<_, _>::from_elements(
+        elements
+            .iter()
+            .cloned()
+            .filter_elements(|elt| !matches!(elt, Node { ref weight } if **weight == "B")),
+    );
     println!("{:#?}", g2);
     g.remove_node(n(1));
     assert!(is_isomorphic_matching(
@@ -2272,7 +2273,7 @@ fn test_edge_filtered() {
     use petgraph::visit::EdgeFiltered;
     use petgraph::visit::IntoEdgeReferences;
 
-    let gr = UnGraph::<(), _>::from_edges(&[
+    let gr = UnGraph::<(), _>::from_edges([
         // cycle
         (0, 1, 7),
         (1, 2, 9),
@@ -2295,7 +2296,7 @@ fn test_edge_filtered() {
     assert_eq!(connected_components(&positive_edges), 2);
 
     let mut dfs = DfsPostOrder::new(&positive_edges, n(0));
-    while let Some(_) = dfs.next(&positive_edges) {}
+    while dfs.next(&positive_edges).is_some() {}
 
     let n = n::<u32>;
     for node in &[n(0), n(1), n(2)] {
